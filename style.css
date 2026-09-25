@@ -1,0 +1,189 @@
+/* ============================================================
+   Raptor Hunt — UI layer: HUD, virtual joysticks, buttons, screens.
+   Pure CSS overlay; the game itself renders to the #game canvas.
+   ============================================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #14200f;
+  color: #fff;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none; /* the game owns all gestures */
+}
+
+#game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+
+.hidden { display: none !important; }
+
+/* ---------------- HUD ---------------- */
+#hud { position: fixed; inset: 0; z-index: 5; pointer-events: none; }
+
+#crosshair {
+  position: absolute; left: 50%; top: 50%;
+  width: 22px; height: 22px;
+  transform: translate(-50%, -50%);
+  border: 2px solid rgba(255, 255, 255, .85);
+  border-radius: 50%;
+  box-shadow: 0 0 3px rgba(0, 0, 0, .7);
+}
+#crosshair::after {
+  content: '';
+  position: absolute; left: 50%; top: 50%;
+  width: 4px; height: 4px; margin: -2px 0 0 -2px;
+  background: #fff; border-radius: 50%;
+}
+
+#top-bar {
+  position: absolute;
+  top: calc(10px + env(safe-area-inset-top));
+  left: calc(14px + env(safe-area-inset-left));
+  right: calc(14px + env(safe-area-inset-right));
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+}
+#health-wrap {
+  width: min(42vw, 260px); height: 16px;
+  border: 2px solid rgba(255, 255, 255, .85); border-radius: 9px;
+  padding: 2px; background: rgba(0, 0, 0, .4);
+}
+#health-bar { height: 100%; width: 100%; background: #59d759; border-radius: 4px; transition: width .2s ease; }
+#health-bar.low { background: #e04c3c; animation: pulse .5s infinite alternate; }
+@keyframes pulse { to { opacity: .45; } }
+
+#stats {
+  font-weight: 700; font-size: 15px;
+  background: rgba(0, 0, 0, .4); padding: 7px 12px; border-radius: 10px;
+  text-shadow: 0 1px 2px #000; white-space: nowrap;
+}
+
+#ammo {
+  position: absolute;
+  right: calc(16px + env(safe-area-inset-right));
+  top: calc(56px + env(safe-area-inset-top));
+  font-size: 20px; font-weight: 800; letter-spacing: .06em;
+  background: rgba(0, 0, 0, .4); padding: 6px 12px; border-radius: 10px;
+  text-shadow: 0 1px 2px #000;
+}
+#ammo.empty { color: #ff7b6b; }
+
+#dino-health-wrap {
+  position: absolute; left: 50%; top: calc(14px + env(safe-area-inset-top));
+  transform: translateX(-50%); width: min(46vw, 280px); text-align: center;
+}
+#dino-health-wrap small {
+  display: block; font-size: 10px; letter-spacing: .25em; opacity: .9;
+  text-shadow: 0 1px 2px #000;
+}
+#dino-health-bar {
+  height: 8px; border: 1px solid rgba(255, 255, 255, .7);
+  background: #d84b38; border-radius: 5px; margin-bottom: 3px;
+  transition: width .15s ease;
+}
+
+#banner {
+  position: absolute; left: 50%; top: 32%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(26px, 6vw, 42px); font-weight: 800; letter-spacing: .25em;
+  text-shadow: 0 2px 8px #000; opacity: 0; transition: opacity .35s ease;
+  white-space: nowrap;
+}
+#banner.show { opacity: 1; }
+
+/* ---------------- damage vignette ---------------- */
+#vignette {
+  position: fixed; inset: 0; z-index: 8; pointer-events: none;
+  background: radial-gradient(circle, transparent 52%, rgba(190, 20, 8, .6));
+  opacity: 0; transition: opacity .18s ease;
+}
+#vignette.hit { opacity: 1; }
+
+/* ---------------- touch controls ---------------- */
+#controls { position: fixed; inset: 0; z-index: 4; pointer-events: none; }
+#look-zone, #move-zone, #controls button { pointer-events: auto; touch-action: none; }
+
+#look-zone { position: absolute; inset: 0; }
+
+#move-zone {
+  position: absolute;
+  left: calc(18px + env(safe-area-inset-left));
+  bottom: calc(26px + env(safe-area-inset-bottom));
+  width: min(40vw, 190px); aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, .25);
+  background: rgba(255, 255, 255, .07);
+}
+#move-stick {
+  position: absolute; left: 50%; top: 50%;
+  width: 42%; height: 42%;
+  margin: -21% 0 0 -21%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .3);
+  border: 2px solid rgba(255, 255, 255, .5);
+}
+
+#controls button {
+  position: absolute;
+  border: 2px solid rgba(255, 255, 255, .45);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .12);
+  color: #fff;
+  font-weight: 800; letter-spacing: .05em;
+  backdrop-filter: blur(2px);
+}
+#controls button:active { filter: brightness(1.5); }
+
+#btn-fire {
+  right: calc(22px + env(safe-area-inset-right));
+  bottom: calc(30px + env(safe-area-inset-bottom));
+  width: 92px; height: 92px; font-size: 17px;
+  background: rgba(224, 76, 60, .5);
+}
+#btn-jump {
+  right: 132px;
+  bottom: calc(30px + env(safe-area-inset-bottom));
+  width: 62px; height: 62px; font-size: 12px;
+}
+#btn-reload {
+  right: calc(26px + env(safe-area-inset-right));
+  bottom: calc(142px + env(safe-area-inset-bottom));
+  width: 62px; height: 62px; font-size: 11px;
+}
+
+/* ---------------- screens ---------------- */
+.screen {
+  position: fixed; inset: 0; z-index: 10;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; text-align: center; padding: 24px;
+  background: radial-gradient(circle at 50% 28%, #2a4520, #0c150c 78%);
+}
+.screen h1 {
+  font-size: clamp(36px, 9vw, 68px);
+  letter-spacing: .05em;
+  color: #b9e981;
+  text-shadow: 0 3px 0 rgba(0, 0, 0, .35);
+}
+.screen p { max-width: 520px; opacity: .85; line-height: 1.55; }
+.screen ul { list-style: none; font-size: 14px; opacity: .75; line-height: 1.8; }
+.screen button {
+  margin-top: 14px; padding: 16px 44px;
+  font-size: 18px; font-weight: 800; letter-spacing: .12em;
+  border: none; border-radius: 14px;
+  background: #e04c3c; color: #fff;
+  box-shadow: 0 5px 0 #7e2418;
+  cursor: pointer;
+}
+.screen button:active { transform: translateY(3px); box-shadow: 0 2px 0 #7e2418; }
+
+/* ---------------- landscape suggestion (touch devices only) ---------------- */
+#rotate-hint {
+  position: fixed; inset: 0; z-index: 20;
+  display: none; align-items: center; justify-content: center;
+  text-align: center; font-size: 20px; font-weight: 700; line-height: 1.6;
+  background: rgba(8, 14, 8, .94);
+}
+@media (orientation: portrait) and (pointer: coarse) {
+  #rotate-hint { display: flex; }
+}

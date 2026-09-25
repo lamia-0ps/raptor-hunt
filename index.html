@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <!-- Mobile viewport: lock pinch-zoom, respect notches (viewport-fit=cover) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#14200f" />
+  <meta name="description" content="Raptor Hunt — a mobile-first 3D dinosaur hunting game built with Three.js and cannon-es." />
+  <title>Raptor Hunt — 3D Dinosaur Hunting</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- CDN modules: no build step required. With Vite (`npm run dev`) the same
+       bare specifiers resolve from node_modules instead. -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "cannon-es": "https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <!-- WebGL render target -->
+  <canvas id="game"></canvas>
+
+  <!-- ================= HUD (informational only, pointer-events: none) ================= -->
+  <div id="hud" class="hidden">
+    <div id="crosshair"></div>
+    <div id="top-bar">
+      <div id="health-wrap"><div id="health-bar"></div></div>
+      <div id="stats"><span id="score">0</span> raptors &middot; Wave <span id="wave">1</span></div>
+    </div>
+    <div id="dino-health-wrap" class="hidden">
+      <div id="dino-health-bar"></div>
+      <small>RAPTOR</small>
+    </div>
+    <div id="ammo">6 / 6</div>
+    <div id="banner"></div>
+  </div>
+
+  <!-- Damage vignette flash -->
+  <div id="vignette"></div>
+
+  <!-- ================= Touch controls ================= -->
+  <div id="controls" class="hidden">
+    <div id="look-zone"></div>                          <!-- drag = aim, motionless tap = fire -->
+    <div id="move-zone"><div id="move-stick"></div></div> <!-- left virtual joystick -->
+    <button id="btn-reload">RELOAD</button>
+    <button id="btn-jump">JUMP</button>
+    <button id="btn-fire">FIRE</button>
+  </div>
+
+  <!-- ================= Screens ================= -->
+  <div id="start-screen" class="screen">
+    <h1>RAPTOR HUNT</h1>
+    <p>The raptors have the run of the jungle. Thin the pack — survive all five waves.</p>
+    <ul class="help">
+      <li><b>Left stick</b> — move &nbsp;&middot;&nbsp; <b>right-side drag</b> — aim</li>
+      <li><b>FIRE</b> — shoot &nbsp;&middot;&nbsp; <b>JUMP</b> &nbsp;&middot;&nbsp; <b>RELOAD</b></li>
+      <li>Desktop: WASD + mouse drag &middot; click to fire &middot; R reload &middot; Space jump</li>
+      <li>Head shots deal 2.5&times; damage</li>
+    </ul>
+    <button id="btn-start">START HUNT</button>
+  </div>
+
+  <div id="end-screen" class="screen hidden">
+    <h1 id="end-title">GAME OVER</h1>
+    <p id="end-sub"></p>
+    <button id="btn-restart">RESTART</button>
+  </div>
+
+  <!-- Suggest landscape on phones/tablets only (never blocks desktop) -->
+  <div id="rotate-hint">↷<br>Rotate your device<br>to landscape
+  </div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
